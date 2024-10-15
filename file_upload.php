@@ -27,12 +27,15 @@ if(isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == UPLOAD_ER
    echo "<br>".  $file_type = $_FILES['profile_pic']['type'];
 echo "<br />";
    $allowed = ['jpg', 'jpeg', 'png'];
+   $mime_allowed = ['image/jpeg', 'image/jpg', 'image/png'];
 
    
     $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+    $mime =  mime_content_type($tmp_file);
+
     $uniqueName = uniqid('', true). '.'.$fileExt;
 
-    if(in_array($fileExt, $allowed)){
+    if(in_array($fileExt, $allowed) && in_array($mime, $mime_allowed)){
 if(!is_dir($uploadPath)){
     if(mkdir($uploadPath, 0755, true)){
 echo "Directory Created";
@@ -48,7 +51,7 @@ echo "File uploaded! Filename is: ". $uniqueName;
         echo '<a href="uploads/">up</a>';
     }
 }else{
-    echo "Please Upload only JPEG, JPG or PNG files.";
+    echo "Please Upload only JPEG, JPG or PNG files. Your file is $mime";
 }
 
     
