@@ -10,6 +10,15 @@
     <?php
     $uploadPath = "uploads/";
     @$name = $_POST['username'];
+
+    //abs()
+    // ceil()
+    // floor
+    // sqrt
+
+    $random  = rand(1, 3);
+
+    echo $random. "<br />";
 // print_r($_POST);
 // print_r($_FILES);
 
