@@ -13,6 +13,21 @@
 <body>
  <?php 
 require_once('includes/db.php');
+if(isset($_GET['delete'])){
+$sql = "delete from staff where id = '". $_GET['delete'] . "'";
+if(mysqli_query($conn, $sql)){
+    ?>
+    <div class="alert alert-primary" role="alert">
+ Data Deleted Successfully!
+</div>
+    <?php 
+}else{ ?>
+    <div class="alert alert-danger" role="alert">
+ Error: <?php echo $query . " - " .mysqli_error($conn); ?>
+</div>
+<?php
+}
+}
 
 $sql = "select * from staff";
 $result = mysqli_query($conn, $sql);
@@ -50,7 +65,8 @@ while ($row = mysqli_fetch_assoc($result)){
         <td><?= $row['designation']; ?></td>
         <td><?= $row['manager_id']; ?></td>
         
-        <td><a href="#">Edit</a> | <a href="#">Delete</a></td>
+        <td><a href="add-staff.php?id=<?= $row['id'];?>"> Edit</a> 
+        | <a href="?delete=<?= $row['id'];?>">Delete</a></td>
     </tr>
     
 <?php $i++; } ?>
