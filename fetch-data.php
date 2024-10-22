@@ -11,7 +11,10 @@
     
 </head>
 <body>
- <?php 
+
+<a href="#bottom">Bottom</a>
+<div id="home"></div>
+<?php 
 require_once('includes/db.php');
 if(isset($_GET['delete'])){
 $sql = "delete from staff where id = '". $_GET['delete'] . "'";
@@ -29,8 +32,41 @@ if(mysqli_query($conn, $sql)){
 }
 }
 
-$sql = "select * from staff";
+/* query for pagination */
+
+$record_per_page = isset($_GET['record_per_page']) ? (int)$_GET['record_per_page'] : 10;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $record_per_page;
+
+// count records
+$counting = "SELECT COUNT(id) AS total from staff";
+$counts = mysqli_query($conn, $counting);
+$total_records = mysqli_fetch_assoc($counts)['total'];
+$total_pages = ceil($total_records / $record_per_page);
+
+$sql = "select * from staff LIMIT $offset, $record_per_page";
 $result = mysqli_query($conn, $sql);
+echo "<div class='my-3'> Showing " . ($offset +1). " to ". min($offset + $record_per_page, $total_records) . "of $total_records records</div>";
+?>
+
+<form method="GET" class="mb-3">
+<label for="records_per_page"> Records per page: </label>
+<select name="records_per_page" id="records_per_page" onchange="this.form.submit()">
+    <option value="10"> <?= $record_per_page == 10 ? 'selected' : ''; ?>10</option>
+    <option value="25"> <?= $record_per_page == 25 ? 'selected' : ''; ?>25</option>
+    <option value="50"> <?= $record_per_page == 50 ? 'selected' : ''; ?>50</option>
+    <option value="100"> <?= $record_per_page == 100 ? 'selected' : ''; ?>100</option>
+</form>
+<?php
+/* Query end */
+
+
+
+
+
+
+
+
 
 // print_r($result);
 
@@ -73,7 +109,8 @@ while ($row = mysqli_fetch_assoc($result)){
 </table>
 
 
-
+<a href="#top">Top</a>
+<div id="bottom"></div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
