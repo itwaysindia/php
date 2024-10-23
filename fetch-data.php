@@ -34,49 +34,30 @@ if(mysqli_query($conn, $sql)){
 
 /* query for pagination */
 
-$record_per_page = isset($_GET['record_per_page']) ? (int)$_GET['record_per_page'] : 10;
+$records_per_page = isset($_GET['records_per_page']) ? (int)$_GET['records_per_page'] : 10;
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($current_page - 1) * $record_per_page;
+$offset = ($current_page - 1) * $records_per_page;
 
 // count records
 $counting = "SELECT COUNT(id) AS total from staff";
 $counts = mysqli_query($conn, $counting);
 $total_records = mysqli_fetch_assoc($counts)['total'];
-$total_pages = ceil($total_records / $record_per_page);
+$total_pages = ceil($total_records / $records_per_page);
 
-$sql = "select * from staff LIMIT $offset, $record_per_page";
-$result = mysqli_query($conn, $sql);
-echo "<div class='my-3'> Showing " . ($offset +1). " to ". min($offset + $record_per_page, $total_records) . "of $total_records records</div>";
+
+echo "<div class='my-3'> Showing " . ($offset +1). " to ". min($offset + $records_per_page, $total_records) . " of $total_records records</div>";
 ?>
 
 <form method="GET" class="mb-3">
 <label for="records_per_page"> Records per page: </label>
 <select name="records_per_page" id="records_per_page" onchange="this.form.submit()">
-    <option value="10"> <?= $record_per_page == 10 ? 'selected' : ''; ?>10</option>
-    <option value="25"> <?= $record_per_page == 25 ? 'selected' : ''; ?>25</option>
-    <option value="50"> <?= $record_per_page == 50 ? 'selected' : ''; ?>50</option>
-    <option value="100"> <?= $record_per_page == 100 ? 'selected' : ''; ?>100</option>
+    <option value="10" <?= $records_per_page == 10 ? ' selected ' : ''; ?>>10</option>
+    <option value="25" <?= $records_per_page == 25 ? ' selected ' : ''; ?>>25</option>
+    <option value="50" <?= $records_per_page == 50 ? ' selected ' : ''; ?>>50</option>
+    <option value="100" <?= $records_per_page == 100 ? ' selected ' : ''; ?>>100</option>
+</select>
 </form>
-<?php
-/* Query end */
 
-
-
-
-
-
-
-
-
-// print_r($result);
-
-// $row = mysqli_fetch_assoc($result);
-// echo "<pre>";
-// print_r($row);
-// die;
-//fetch data
-
-?>
 <div align="right">
     <a class="btn btn-primary my-2" href="add-staff.php">Add Staff</a>
 </div>
@@ -90,8 +71,11 @@ echo "<div class='my-3'> Showing " . ($offset +1). " to ". min($offset + $record
         <th>Action</th>
 </tr>
 <?php 
- $i = 1;
-while ($row = mysqli_fetch_assoc($result)){
+$sql = "select * from staff LIMIT $offset, $records_per_page";
+$r = mysqli_query($conn, $sql);
+
+ $i = $offset + 1;
+while ($row = mysqli_fetch_assoc($r)){
  
   ?>
     <tr>
@@ -108,6 +92,60 @@ while ($row = mysqli_fetch_assoc($result)){
 <?php $i++; } ?>
 </table>
 
+<nav aria-label="page navigation">
+    <ul class="pagination">
+        <?php if ($current_page > 1){ ?>
+            <li class="page-item">
+            <a class="page-link" href="?page=<?= $current_page - 1; ?>&records_per_page=<?= $records_per_page; ?>"> Previous </a>
+            </li>
+            <?php } ?>
+    
+   <!-- Dispaly previous three pages -->
+   <?php 
+   for ($page = max(1, $current_page-3); $page < $current_page; $page++){
+?>
+<li class="page-item">
+<a class="page-link" href="?page=<?= $page; ?>&records_per_page=<?= $records_per_page; ?>"><?= $page; ?></a>
+</li>
+<?php
+   }
+   ?>
+   <!-- /Dispaly previous three pages -->
+
+   <!-- current Page -->
+   <li class="page-item active" aria-current="page">
+    <span class="page-link"><?= $current_page; ?></span>    
+    </li>
+   <!-- //current Page -->
+    
+
+   <!-- Dispaly Next three pages -->
+   <?php 
+   for ($page = $current_page +1; $page <= min($total_pages, $current_page +3); $page++){
+   //for ($page = max(1, $current_page-3); $page < $current_page; $page++){
+?>
+<li class="page-item">
+<a class="page-link" href="?page=<?= $page; ?>&records_per_page=<?= $records_per_page; ?>"><?= $page; ?></a>
+</li>
+<?php
+   }
+   ?>
+   <!-- /Dispaly Next three pages -->
+   
+        <?php if ($current_page < $total_pages){ ?>
+            <li class="page-item">
+            <a class="page-link" href="?page=<?= $current_page + 1; ?>&records_per_page=<?= $records_per_page; ?>"> Next </a>
+            </li>
+            <?php } ?>
+
+
+
+    </ul>
+</nav>
+
+<?php 
+print_r($_SERVER);
+?>
 
 <a href="#top">Top</a>
 <div id="bottom"></div>
