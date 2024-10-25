@@ -7,7 +7,24 @@
     <title>Document</title>
 </head>
 <body>
+    <div style="text-align:right;">
+<a href="?logout">Logout</a>
+    </div>
     <?php 
+    session_start();
+
+if(isset($_GET['logout'])){
+    session_destroy();
+    header("Location: login.php");
+}
+
+if($_SESSION['is_logged_in'] !=1){
+    session_destroy();
+    header("Location: login.php");
+}
+echo $_SESSION['username'];
+
+
     // Printing Hello 
     echo "<h1>Hello!</h1>";
 
